@@ -216,6 +216,7 @@ void RenderBowl(void)
 		float minZ = -4.0;
 		float maxX = 8.0;
 		float maxZ = 8.0;
+
 		//******************
 		//ground
 		//******************
@@ -229,6 +230,36 @@ void RenderBowl(void)
 		glTexCoord2f(0.0,1.0);
 		glVertex3f(minX,0.0,maxZ);
 	glEnd();
+	glColor3f(.5,.5,.5);
+	glBegin(GL_QUADS);
+
+            /* Ceiling */
+            glVertex3f(minX,6,minZ);
+            glVertex3f(maxX,6,minZ);
+            glVertex3f(maxX,6,maxZ);
+            glVertex3f(minX,6,maxZ);
+            /* Walls */
+           /* glVertex3f(minX,-2,maxZ);
+            glVertex3f(maxX,-2,maxZ);
+            glVertex3f(maxX,6,maxZ);
+            glVertex3f(minX,6,maxZ);*/
+
+            glVertex3f(minX,0,minZ);
+            glVertex3f(maxX,0,minZ);
+            glVertex3f(maxX,6,minZ);
+            glVertex3f(minX,6,minZ);
+
+            glVertex3f(maxX,6,maxZ);
+            glVertex3f(maxX,0,maxZ);
+            glVertex3f(maxX,0,minZ);
+            glVertex3f(maxX,6,minZ);
+
+            glVertex3f(minX,6,maxZ);
+            glVertex3f(minX,0,maxZ);
+            glVertex3f(minX,0,minZ);
+            glVertex3f(minX,6,minZ);
+        glEnd();
+
     glRotatef(turn,0,1,0);
     //GLfloat white[] = {0.8f, 0.8f, 0.8f, 1.0f};
     //GLfloat cyan[] = {0.f, .8f, .8f, 1.f};
@@ -327,6 +358,7 @@ void RenderBowl(void)
 
 		glEnable(GL_TEXTURE_2D);
         WaterTexture.SetActive();
+        glPushMatrix();
         glTranslatef(0.0,-0.2,0.0);
 		glBegin(GL_POLYGON);
 
@@ -339,6 +371,7 @@ void RenderBowl(void)
 			glVertex3fv(&Vertices[i+NumOfVerticesStone].x);
 		}
 		glEnd();
+		glPopMatrix();
 		glDisable(GL_TEXTURE_2D);
 
 	glEndList();
@@ -509,6 +542,8 @@ void RenderBowl(void)
 
 	glEnd();*/
 
+
+
 }
 
 void DrawScene(void)
@@ -581,6 +616,8 @@ void Display(void)
     glLightfv(GL_LIGHT3, GL_POSITION, position3);
     glLighti(GL_LIGHT3, GL_SPOT_CUTOFF, 15);
     glLightfv(GL_LIGHT3, GL_SPOT_DIRECTION, direction3);*/
+
+    // internal
    GLfloat position[] = {1,1,1.5,1};
     GLfloat direction[] = {-1,-1,-1.5};
     GLfloat diffuse[] = {0,1,0};
@@ -594,6 +631,7 @@ void Display(void)
     glLightfv(GL_LIGHT0, GL_AMBIENT,ambient);
     glEnable(GL_LIGHT0);
 
+    // internal
     GLfloat position1[] = {2,2,1,1};
     GLfloat direction1[] = {-1,-2,-1};
     GLfloat diffuse1[] = {0,0,1};
@@ -607,6 +645,7 @@ void Display(void)
     glLightfv(GL_LIGHT1, GL_AMBIENT,ambient1);
     glEnable(GL_LIGHT1);
 
+    // internal
     GLfloat position2[] = {2,2,1,1};
     GLfloat direction2[] = {0,-2,-1};
     GLfloat diffuse2[] = {1,0,0};
@@ -620,24 +659,26 @@ void Display(void)
     glLightfv(GL_LIGHT2, GL_AMBIENT,ambient2);
     glEnable(GL_LIGHT2);
 
-    GLfloat position3[] = {-3,2,1,1};
-    GLfloat direction3[] = {8,-2,-1};
-    GLfloat diffuse3[] = {.5,.7,.5};
-    GLfloat ambient3[] = {.5,7,.6};
-    GLfloat specular3[] = {.5,.7,.6};
+    // external
+    GLfloat position3[] = {-2,-2,-1,1};
+    GLfloat direction3[] = {3,1,1};
+    GLfloat diffuse3[] = {.6,.6,0};
+    GLfloat ambient3[] = {.6,.6,0};
+    GLfloat specular3[] = {.6,.6,0};
     glLightfv(GL_LIGHT3, GL_POSITION, position3);
-    glLighti(GL_LIGHT3, GL_SPOT_CUTOFF, 8);
+    glLighti(GL_LIGHT3, GL_SPOT_CUTOFF, 30);
     glLightfv(GL_LIGHT3, GL_SPOT_DIRECTION, direction3);
     glLightfv(GL_LIGHT3, GL_SPECULAR,specular3);
     glLightfv(GL_LIGHT3, GL_DIFFUSE,diffuse3);
     glLightfv(GL_LIGHT3, GL_AMBIENT,ambient3);
     glEnable(GL_LIGHT3);
 
-    GLfloat position4[] = {2,5,-1,1};
-    GLfloat direction4[] = {-2,-3,1};
-    GLfloat diffuse4[] = {.5,.5,.5};
-    GLfloat ambient4[] = {.5,.5,.5};
-    GLfloat specular4[] = {.5,.5,.5};
+    // external
+    GLfloat position4[] = {2,-1,-1,1};
+    GLfloat direction4[] = {-1,1,1};
+    GLfloat diffuse4[] = {1,0,0};
+    GLfloat ambient4[] = {1,0,0};
+    GLfloat specular4[] = {1,0,0};
     glLightfv(GL_LIGHT4, GL_POSITION, position4);
     glLighti(GL_LIGHT4, GL_SPOT_CUTOFF, 30);
     glLightfv(GL_LIGHT4, GL_SPOT_DIRECTION, direction4);
@@ -646,11 +687,14 @@ void Display(void)
     glLightfv(GL_LIGHT4, GL_AMBIENT,ambient4);
     glEnable(GL_LIGHT4);
 
-    GLfloat position5[] = {-2,5,-1,1};
-    GLfloat direction5[] = {2,-5,1};
-    GLfloat diffuse5[] = {.3,.2,.5};
-    GLfloat ambient5[] = {.3,.2,.5};
-    GLfloat specular5[] = {.3,.1,.5};
+    //external ambient
+   GLfloat position5[] =  {0,2,2,1};
+    GLfloat direction5[] = {-3,-2,-2};
+//    GLfloat position5[] =  {-4,6,-6,1};
+ //   GLfloat direction5[] = {-3,-6,-6};
+    GLfloat diffuse5[] = {0,0,1};
+    GLfloat ambient5[] = {0,0,1};
+    GLfloat specular5[] = {0,0,1};
     glLightfv(GL_LIGHT5, GL_POSITION, position5);
     glLighti(GL_LIGHT5, GL_SPOT_CUTOFF, 30);
     glLightfv(GL_LIGHT5, GL_SPOT_DIRECTION, direction5);
@@ -659,6 +703,19 @@ void Display(void)
     glLightfv(GL_LIGHT5, GL_AMBIENT,ambient5);
     glEnable(GL_LIGHT5);
 
+    //external
+/*    GLfloat position6[] =  {2,-1,-1,1};
+    GLfloat direction6[] = {0,1,1};
+    GLfloat diffuse6[] = {1,1,0};
+    GLfloat ambient6[] = {1,1,0};
+    GLfloat specular6[] = {1,1,0};
+    glLightfv(GL_LIGHT6, GL_POSITION, position6);
+    glLighti(GL_LIGHT6, GL_SPOT_CUTOFF, 7);
+    glLightfv(GL_LIGHT6, GL_SPOT_DIRECTION, direction6);
+    glLightfv(GL_LIGHT6, GL_SPECULAR,specular6);
+    glLightfv(GL_LIGHT6, GL_DIFFUSE,diffuse6);
+    glLightfv(GL_LIGHT6, GL_AMBIENT,ambient6);
+    glEnable(GL_LIGHT6);*/
 
 	glFlush();			///Finish rendering
 	glutSwapBuffers();
@@ -756,7 +813,7 @@ int main (int argc, char **argv)
 	//glLightfv(GL_LIGHT3, GL_DIFFUSE, LightDiffuse);
 
 
-    glEnable(GL_LIGHT0);
+    //glEnable(GL_LIGHT0);
 
     //glEnable(GL_LIGHT2);
     //glEnable(GL_LIGHT3);
