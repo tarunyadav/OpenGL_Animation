@@ -77,7 +77,7 @@ The method "RenderBowl" is not very interesting - it simply renders a bowl!
 //lighting:
 GLfloat LightAmbient[]=		{ 0.2f, 0.2f, 0.2f, 0.0f };
 GLfloat LightDiffuse[]=		{ 0.8f, 0.8f, 0.8f, 0.0f };
-GLfloat LightPosition[]=	{ 1.0f, -0.5f, -0.5f, 0.0f };
+GLfloat LightPosition[]=	{ 1.0f, -0.5f, -0.5f, 1.0f };
 
 
 //Constants:
@@ -200,6 +200,7 @@ struct SVertex
 {
 	GLfloat x,y,z;
 };
+float turn=0;
 
 void RenderBowl(void)
 {
@@ -228,11 +229,18 @@ void RenderBowl(void)
 		glTexCoord2f(0.0,1.0);
 		glVertex3f(minX,0.0,maxZ);
 	glEnd();
-
+    glRotatef(turn,0,1,0);
+    //GLfloat white[] = {0.8f, 0.8f, 0.8f, 1.0f};
+    //GLfloat cyan[] = {0.f, .8f, .8f, 1.f};
+    //glMaterialfv(GL_FRONT, GL_DIFFUSE, cyan);
+    //glMaterialfv(GL_FRONT, GL_SPECULAR, white);
+    //GLfloat shininess[] = {200};
+    //glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
 	RockTexture.SetActive();
 	// change here for whole scene translation
+
 	glPushMatrix();
-    glTranslatef(1.3,0.0,1.0);
+    //glTranslatef(1.3,0.0,1.0);
     SVertex * Vertices = new SVertex[NumOfVerticesStone*4];  //allocate mem for the required vertices
 	ListNum = glGenLists(1);
 	for (GLint i = 0; i<NumOfVerticesStone; i++)
@@ -241,18 +249,21 @@ void RenderBowl(void)
 		Vertices[i].y = StoneHeight;  //Top
 		Vertices[i].z = sin(2.0 * PI / NumOfVerticesStone * i) * OuterRadius;
 	}
+
 	for (int i = 0; i<NumOfVerticesStone; i++)
 	{
 		Vertices[i + NumOfVerticesStone*1].x = cos(2.0 * PI / NumOfVerticesStone * i) * InnerRadius;
 		Vertices[i + NumOfVerticesStone*1].y = StoneHeight;  //Top
 		Vertices[i + NumOfVerticesStone*1].z = sin(2.0 * PI / NumOfVerticesStone * i) * InnerRadius;
 	}
+
 	for (int i = 0; i<NumOfVerticesStone; i++)
 	{
 		Vertices[i + NumOfVerticesStone*2].x = cos(2.0 * PI / NumOfVerticesStone * i) * OuterRadius;
 		Vertices[i + NumOfVerticesStone*2].y = 0.0;  //Bottom
 		Vertices[i + NumOfVerticesStone*2].z = sin(2.0 * PI / NumOfVerticesStone * i) * OuterRadius;
 	}
+
 	for (int i = 0; i<NumOfVerticesStone; i++)
 	{
 		Vertices[i + NumOfVerticesStone*3].x = cos(2.0 * PI / NumOfVerticesStone * i) * InnerRadius;
@@ -273,14 +284,19 @@ void RenderBowl(void)
 		//stone:
 		for (int j = 1; j < 3; j++)
 		{
-			if (j == 1) glColor3f(0.8,0.4,0.4);
+			if (j == 1) glColor3f(1.0,0.6,0.6);
 			if (j == 2) glColor3f(0.4,0.2,0.2);
 			int i;
 			for (i = 0; i<NumOfVerticesStone-1; i++)
 			{
+			    glNormal3f(0,1,0);
+			    glTexCoord2f(1,1);
 				glVertex3fv(&Vertices[i+NumOfVerticesStone*j].x);
+				glTexCoord2f(0,1);
 				glVertex3fv(&Vertices[i].x);
+				glTexCoord2f(1,0);
 				glVertex3fv(&Vertices[i+1].x);
+				glTexCoord2f(1,0);
 				glVertex3fv(&Vertices[i+NumOfVerticesStone*j+1].x);
 			}
 			glVertex3fv(&Vertices[i+NumOfVerticesStone*j].x);
@@ -288,10 +304,10 @@ void RenderBowl(void)
 			glVertex3fv(&Vertices[0].x);
 			glVertex3fv(&Vertices[NumOfVerticesStone*j].x);
 		}
-
-		glColor3f(0.4,0.2,0.2);
-		int i;
-		/*WaterTexture.SetActive();
+        // color of texture of water
+		glColor3f(0.5,0.5,0.7);
+		/*int i;
+		WaterTexture.SetActive();
 		for (i = 0; i<NumOfVerticesStone-1; i++)
 		{
 			glVertex3fv(&Vertices[i+NumOfVerticesStone*3].x);
@@ -316,6 +332,7 @@ void RenderBowl(void)
 
 		for (int i = 0; i<NumOfVerticesStone; i++)
 		{
+		    glNormal3f(0,1,0);
 			glTexCoord2f(	0.5+cos(i/GLfloat(NumOfVerticesStone)*360.0*PI/180.0)/2.0,
 							0.5-sin(i/GLfloat(NumOfVerticesStone)*360.0*PI/180.0)/2.0);
 
@@ -505,10 +522,15 @@ void DrawScene(void)
 		glTranslatef(0.0,POOL_HEIGHT,0.0);
 		//Pool.Render();
 	glPopMatrix();
-
+    glPushMatrix();
 	//Render the bowl
+
+
 	RenderBowl();
 
+    glPopMatrix();
+    // postion of fountain is set
+    glTranslatef(-1.25,0,-1.2);
 	glDisable(GL_TEXTURE_2D);
 
 	//Render the water in the air.
@@ -520,23 +542,125 @@ void DrawScene(void)
 	glDisable(GL_BLEND);
 
 }
-float turn=0;
+
 
 void Display(void)
 {
-    turn = trun +3;
+    turn = turn +10;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glRotatef(0,turn,0,0);
+
 	glLoadIdentity();
 
 	Camera.Render();
 
-	glLightfv(GL_LIGHT0,GL_POSITION,LightPosition);
+	//glLightfv(GL_LIGHT0,GL_POSITION,LightPosition);
 	//Turn two sided lighting on:
-	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+	//glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 
 	DrawScene();
-	glFlush();			//Finish rendering
+	/*GLfloat position[] = {.5,2,0,1};
+    GLfloat direction[] = {0,-2,0};
+    glLightfv(GL_LIGHT0, GL_POSITION, position);
+    glLighti(GL_LIGHT0, GL_SPOT_CUTOFF, 15);
+    glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, direction);
+
+    GLfloat position1[] = {-.5,2,0,1};
+    GLfloat direction1[] = {0,-1,0};
+    glLightfv(GL_LIGHT1, GL_POSITION, position1);
+    glLighti(GL_LIGHT1, GL_SPOT_CUTOFF, 15);
+    glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, direction1);
+
+    GLfloat position2[] = {1,1,0,1};
+    GLfloat direction2[] = {0,-1,0};
+    glLightfv(GL_LIGHT2, GL_POSITION, position2);
+    glLighti(GL_LIGHT2, GL_SPOT_CUTOFF, 15);
+    glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, direction2);
+
+    GLfloat position3[] = {.75,1,0,1};
+    GLfloat direction3[] = {0,-2,0};
+    glLightfv(GL_LIGHT3, GL_POSITION, position3);
+    glLighti(GL_LIGHT3, GL_SPOT_CUTOFF, 15);
+    glLightfv(GL_LIGHT3, GL_SPOT_DIRECTION, direction3);*/
+   GLfloat position[] = {1,1,1.5,1};
+    GLfloat direction[] = {-1,-1,-1.5};
+    GLfloat diffuse[] = {0,1,0};
+    GLfloat ambient[] = {0,1,0};
+    GLfloat specular[] = {0,1,0};
+    glLightfv(GL_LIGHT0, GL_POSITION, position);
+    glLighti(GL_LIGHT0, GL_SPOT_CUTOFF, 8);
+    glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, direction);
+    glLightfv(GL_LIGHT0, GL_SPECULAR,specular);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE,diffuse);
+    glLightfv(GL_LIGHT0, GL_AMBIENT,ambient);
+    glEnable(GL_LIGHT0);
+
+    GLfloat position1[] = {2,2,1,1};
+    GLfloat direction1[] = {-1,-2,-1};
+    GLfloat diffuse1[] = {0,0,1};
+    GLfloat ambient1[] = {0,0,1};
+    GLfloat specular1[] = {0,0,1};
+    glLightfv(GL_LIGHT1, GL_POSITION, position1);
+    glLighti(GL_LIGHT1, GL_SPOT_CUTOFF, 10);
+    glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, direction1);
+    glLightfv(GL_LIGHT1, GL_SPECULAR,specular1);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE,diffuse1);
+    glLightfv(GL_LIGHT1, GL_AMBIENT,ambient1);
+    glEnable(GL_LIGHT1);
+
+    GLfloat position2[] = {2,2,1,1};
+    GLfloat direction2[] = {0,-2,-1};
+    GLfloat diffuse2[] = {1,0,0};
+    GLfloat ambient2[] = {1,0,0};
+    GLfloat specular2[] = {1,0,0};
+    glLightfv(GL_LIGHT2, GL_POSITION, position2);
+    glLighti(GL_LIGHT2, GL_SPOT_CUTOFF, 10);
+    glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, direction2);
+    glLightfv(GL_LIGHT2, GL_SPECULAR,specular2);
+    glLightfv(GL_LIGHT2, GL_DIFFUSE,diffuse2);
+    glLightfv(GL_LIGHT2, GL_AMBIENT,ambient2);
+    glEnable(GL_LIGHT2);
+
+    GLfloat position3[] = {-3,2,1,1};
+    GLfloat direction3[] = {8,-2,-1};
+    GLfloat diffuse3[] = {.5,.7,.5};
+    GLfloat ambient3[] = {.5,7,.6};
+    GLfloat specular3[] = {.5,.7,.6};
+    glLightfv(GL_LIGHT3, GL_POSITION, position3);
+    glLighti(GL_LIGHT3, GL_SPOT_CUTOFF, 8);
+    glLightfv(GL_LIGHT3, GL_SPOT_DIRECTION, direction3);
+    glLightfv(GL_LIGHT3, GL_SPECULAR,specular3);
+    glLightfv(GL_LIGHT3, GL_DIFFUSE,diffuse3);
+    glLightfv(GL_LIGHT3, GL_AMBIENT,ambient3);
+    glEnable(GL_LIGHT3);
+
+    GLfloat position4[] = {2,5,-1,1};
+    GLfloat direction4[] = {-2,-3,1};
+    GLfloat diffuse4[] = {.5,.5,.5};
+    GLfloat ambient4[] = {.5,.5,.5};
+    GLfloat specular4[] = {.5,.5,.5};
+    glLightfv(GL_LIGHT4, GL_POSITION, position4);
+    glLighti(GL_LIGHT4, GL_SPOT_CUTOFF, 30);
+    glLightfv(GL_LIGHT4, GL_SPOT_DIRECTION, direction4);
+    glLightfv(GL_LIGHT4, GL_SPECULAR,specular4);
+    glLightfv(GL_LIGHT4, GL_DIFFUSE,diffuse4);
+    glLightfv(GL_LIGHT4, GL_AMBIENT,ambient4);
+    glEnable(GL_LIGHT4);
+
+    GLfloat position5[] = {-2,5,-1,1};
+    GLfloat direction5[] = {2,-5,1};
+    GLfloat diffuse5[] = {.3,.2,.5};
+    GLfloat ambient5[] = {.3,.2,.5};
+    GLfloat specular5[] = {.3,.1,.5};
+    glLightfv(GL_LIGHT5, GL_POSITION, position5);
+    glLighti(GL_LIGHT5, GL_SPOT_CUTOFF, 30);
+    glLightfv(GL_LIGHT5, GL_SPOT_DIRECTION, direction5);
+    glLightfv(GL_LIGHT5, GL_SPECULAR,specular5);
+    glLightfv(GL_LIGHT5, GL_DIFFUSE,diffuse5);
+    glLightfv(GL_LIGHT5, GL_AMBIENT,ambient5);
+    glEnable(GL_LIGHT5);
+
+
+	glFlush();			///Finish rendering
 	glutSwapBuffers();
 }
 
@@ -600,14 +724,45 @@ int main (int argc, char **argv)
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glEnable(GL_DEPTH_TEST);
 
-	//Initialize lighting:
-	g_bLighting = true;
-	glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse);
-	glLightfv(GL_LIGHT1, GL_POSITION,LightPosition);
-	glEnable(GL_LIGHT1);
 
-	glEnable(GL_LIGHTING);
+    	//Initialize lighting:
+	g_bLighting = true;
+	//glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);
+	//glLightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse);
+	//glLightfv(GL_LIGHT1, GL_POSITION,LightPosition);
+	//glEnable(GL_LIGHT1);
+
+
+    /*GLfloat specular[] = {1,0,0,1};
+    glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
+    glEnable(GL_LIGHT0);
+    GLfloat specular[] = {0,0,1,1};
+    glLightfv(GL_LIGHT1, GL_SPECULAR, specular);
+    glEnable(GL_LIGHT1);
+    GLfloat specular[] = {-1,0,0,1};
+    glLightfv(GL_LIGHT2, GL_SPECULAR, specular);
+    glEnable(GL_LIGHT2);
+    GLfloat specular[] = {0,0,-1,1};
+    glLightfv(GL_LIGHT3, GL_SPECULAR, specular);
+    glEnable(GL_LIGHT3);*/
+    //GLfloat position[] = {1,4,3,1};
+    //GLfloat direction[] = {-1,-4,-3};
+    //GLfloat specular[] = {1,1,1,1};
+
+    //glLightfv(GL_LIGHT0,GL_SPECULAR,specular);
+   // glLightfv(GL_LIGHT3,GL_SPECULAR,specular);
+
+    //glLightfv(GL_LIGHT3, GL_AMBIENT, LightAmbient);
+	//glLightfv(GL_LIGHT3, GL_DIFFUSE, LightDiffuse);
+
+
+    glEnable(GL_LIGHT0);
+
+    //glEnable(GL_LIGHT2);
+    //glEnable(GL_LIGHT3);
+
+
+    glEnable(GL_LIGHTING);
 
 	glEnable(GL_COLOR_MATERIAL);
 

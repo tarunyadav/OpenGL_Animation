@@ -57,7 +57,7 @@ void CCamera::Render( void )
 	glRotatef(-RotatedX , 1.0, 0.0, 0.0);
 	glRotatef(-RotatedY , 0.0, 1.0, 0.0);
 	glRotatef(-RotatedZ , 0.0, 0.0, 1.0);
-	glTranslatef( -Position.x, -Position.y, -Position.z );
+	glTranslatef( -Position.x+1.3, -Position.y, -Position.z+1 );
 }
 
 void CCamera::MoveForwards( GLfloat Distance )

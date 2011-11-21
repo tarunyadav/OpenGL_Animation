@@ -4,6 +4,7 @@
 
 #define RandomFactor 2.0
 
+
 GLfloat GetRandomFloat(GLfloat range)
 {
 	return (GLfloat)rand() / (GLfloat)RAND_MAX * range * RandomFactor;
@@ -27,7 +28,7 @@ void CDrop::SetTime(GLfloat NewTime)
 void CDrop::GetNewPosition(SF3dVector * PositionVertex, float dtime, CPool * pPool, CAirFountain * pAirFountain)
 {
 	SF3dVector Position;
-	time += dtime*20.0f;
+	time += dtime*10.0f;
 
 	if (time > 0.0f)
 	{
